@@ -1,4 +1,4 @@
-# Handlers for the data resolver 
+Handlers for the data resolver 
 =====================
 
 [![Build Status](https://travis-ci.com/jojo1981/data-resolver-handlers.svg?branch=master)](https://travis-ci.com/jojo1981/data-resolver-handlers)
