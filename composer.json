@@ -1,0 +1,39 @@
+{
+  "name": "jojo1981/data-resolver-handlers",
+  "description": "Handlers for the data resolver",
+  "keywords": [
+    "data",
+    "resolver",
+    "handler",
+    "handlers",
+    "doctrine"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "readme": "README.md",
+  "authors": [
+    {
+      "name": "Joost Nijhuis",
+      "email": "jnijhuis81@gmail.com"
+    }
+  ],
+  "prefer-stable": true,
+  "require": {
+    "php": "^7.1",
+    "doctrine/collections": "^1.6@dev",
+    "jojo1981/data-resolver": "dev-master"
+  },
+  "require-dev": {
+    "php-coveralls/php-coveralls": "2.1.x-dev",
+    "phpunit/phpunit": "^7.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jojo1981\\DataResolverHandlers\\": "src/"
+    }
+  },
+  "config": {
+    "bin-dir": "bin",
+    "sort-packages": true
+  }
+}
