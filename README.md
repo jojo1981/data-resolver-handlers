@@ -9,9 +9,9 @@ Handlers for the data resolver
 
 Author: Joost Nijhuis <[jnijhuis81@gmail.com](mailto:jnijhuis81@gmail.com)>
 
-This library is an extension for `jojo1981/data-resolver` and contains custom handlers which add support to work with some 3th party libraries.
+This library is an extension for the `jojo1981/data-resolver` package and contains custom handlers which add support to work with some 3th party libraries.
 
-This library a support for:
+This library has support for:
 - instances of `Doctrine\Common\Collections\Collection` from the package `doctrine/collections`.
 
 ## Installation
