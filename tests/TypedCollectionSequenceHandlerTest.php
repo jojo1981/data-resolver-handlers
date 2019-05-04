@@ -197,7 +197,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
      * @throws InvalidArgumentException
      * @return void
      */
-    public function flattenShouldReturnANewCollectionOfTheSameCollectionClassTypeWithTheFlattenValues(): void
+    public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAStringValue(): void
     {
         $elements = [
             'key1' => (object) [
@@ -226,6 +226,71 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         $calledTimes = 0;
         $expectedCallArguments = [
             [(object) ['name' => 'value1'], 0],
+            [(object) ['name' => ['value2.1', 'value2.2']], 1],
+            [(object) ['name' => 'value3'], 2],
+            [(object) ['name' => 'value4'], 3]
+        ];
+
+        $callback = function (int $index, $value) use (&$calledTimes, $expectedCallArguments) {
+            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
+            $calledTimes++;
+
+            return $value->name;
+        };
+        $flattenCollection = $this->getTypedCollectionSequenceHandler()->flatten($originalCollection, $callback);
+        $this->assertSame(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        $this->assertInstanceOf(Collection::class, $flattenCollection);
+        $this->assertNotSame($flattenCollection, $originalCollection);
+        $this->assertEquals(5, $flattenCollection->count());
+        $this->assertEquals('string', $flattenCollection->getType());
+        $this->assertEquals(
+            ['value1', 'value2.1', 'value2.2', 'value3', 'value4'],
+            $flattenCollection->toArray()
+        );
+
+        // assert no side effect are occurred and original collection is not changed
+        $this->assertEquals(4, $originalCollection->count());
+        $this->assertSame(\array_values($elements), $originalCollection->toArray());
+    }
+
+    /**
+     * @test
+     *
+     * @throws CollectionException
+     * @throws ExpectationFailedException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @return void
+     */
+    public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAnArrayAnTheLastElementIsAString(): void
+    {
+        $elements = [
+            'key1' => (object) [
+                'name' => ['value1']
+            ],
+            'key2' => (object) [
+                'name' => [
+                    'value2.1',
+                    'value2.2'
+                ]
+            ],
+            'key3' => (object) [
+                'name' => 'value3'
+            ],
+            'key4' => (object) [
+                'name' => 'value4'
+            ]
+        ];
+        $originalCollection = new Collection(\stdClass::class, $elements);
+
+        // assert initial data
+        $this->assertEquals(4, $originalCollection->count());
+        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+
+        // test flatten
+        $calledTimes = 0;
+        $expectedCallArguments = [
+            [(object) ['name' => ['value1']], 0],
             [(object) ['name' => ['value2.1', 'value2.2']], 1],
             [(object) ['name' => 'value3'], 2],
             [(object) ['name' => 'value4'], 3]
