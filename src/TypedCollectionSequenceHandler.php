@@ -75,25 +75,17 @@ class TypedCollectionSequenceHandler implements SequenceHandlerInterface
         $elements = [];
         $type = null;
         foreach ($data as $key => $value) {
-            $items = $callback($key, $value);
-            if (null === $type){
-                if ($items instanceof Collection) {
-                    $type = $items->getType();
-                } else if (\is_array($items) && !empty($items)) {
-                    $type = TypeChecker::getType(\end($items));
-                } else {
-                    $type = TypeChecker::getType($items);
-                }
-            }
-            if ($items instanceof Collection) {
-                $items = $items->toArray();
-            }
-            if (!\is_array($items)) {
-                $items = [$items];
+            $callbackResult = $callback($key, $value);
+            if ($callbackResult instanceof Collection) {
+                $type = $type ?? $callbackResult->getType();
+                $callbackResult = $callbackResult->toArray();
             }
 
-            if (!empty($items)) {
-                \array_push($elements, ...$items);
+            $callbackResult = \is_array($callbackResult) ? $callbackResult : (array) $callbackResult;
+
+            if (!empty($callbackResult)) {
+                $type = TypeChecker::getType(\end($callbackResult));
+                \array_push($elements, ...$callbackResult);
             }
         }
 
