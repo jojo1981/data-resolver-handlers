@@ -225,7 +225,7 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
             [['name' => 'value4'], 'key4']
         ];
 
-        $callback = function (array $value, string $key) use (&$calledTimes, $expectedCallArguments) {
+        $callback = function (string $key, array $value) use (&$calledTimes, $expectedCallArguments) {
             $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $key]);
             $calledTimes++;
 

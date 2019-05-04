@@ -72,7 +72,7 @@ class DoctrineCollectionSequenceHandler implements SequenceHandlerInterface
         $result->clear();
 
         foreach ($data as $key => $value) {
-            $items = (array) $callback($value, $key);
+            $items = (array) $callback($key, $value);
             foreach ($items as $item) {
                 $result->add($item);
             }
