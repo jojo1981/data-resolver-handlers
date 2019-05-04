@@ -13,6 +13,7 @@ This library is an extension for the `jojo1981/data-resolver` package and contai
 
 This library has support for:
 - instances of `Doctrine\Common\Collections\Collection` from the package `doctrine/collections`.
+- instances of `Jojo1981\TypedCollection\Collection` from the package `jojo1981/typed-collection`.
 
 ## Installation
 
@@ -41,6 +42,7 @@ require 'vendor/autoload.php';
 $handlerFactory = new \Jojo1981\DataResolver\Factory\HandlerFactory();
 $handlerFactory->setSequenceHandlers([
     new \Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler(),
+    new \Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler(),
     new \Jojo1981\DataResolver\Handler\SequenceHandler\ArraySequenceHandler()
 ]);
 
