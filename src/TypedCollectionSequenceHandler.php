@@ -9,8 +9,6 @@
  */
 namespace Jojo1981\DataResolverHandlers;
 
-use Jojo1981\DataResolver\Handler\Exception\HandlerException;
-use Jojo1981\DataResolver\Handler\SequenceHandlerInterface;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
 use Jojo1981\TypedCollection\TypeChecker;
@@ -18,28 +16,22 @@ use Jojo1981\TypedCollection\TypeChecker;
 /**
  * @package Jojo1981\DataResolverHandlers
  */
-class TypedCollectionSequenceHandler implements SequenceHandlerInterface
+class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
 {
     /**
-     * @param mixed $data
-     * @return bool
+     * @return string
      */
-    public function supports($data): bool
+    protected function getSupportedType(): string
     {
-        return $data instanceof Collection;
+        return Collection::class;
     }
 
     /**
      * @param mixed|Collection $data
-     * @throws HandlerException
      * @return \Traversable
      */
-    public function getIterator($data): \Traversable
+    protected function performGetIterator($data): \Traversable
     {
-        if (!$this->supports($data)) {
-            $this->throwUnsupportedException('getIterator');
-        }
-
         return $data->getIterator();
     }
 
@@ -47,31 +39,21 @@ class TypedCollectionSequenceHandler implements SequenceHandlerInterface
      * @param mixed|Collection $data
      * @param callable $callback
      * @throws CollectionException
-     * @throws HandlerException
      * @return Collection
      */
-    public function filter($data, callable $callback): Collection
+    protected function performFilter($data, callable $callback): Collection
     {
-        if (!$this->supports($data)) {
-            $this->throwUnsupportedException('filter');
-        }
-
         return $data->filter($callback);
     }
 
     /**
      * @param mixed|Collection $data
      * @param callable $callback
-     * @throws HandlerException
      * @throws CollectionException
      * @return Collection
      */
-    public function flatten($data, callable $callback): Collection
+    protected function performFlatten($data, callable $callback): Collection
     {
-        if (!$this->supports($data)) {
-            $this->throwUnsupportedException('flatten');
-        }
-
         $elements = [];
         $type = null;
         foreach ($data as $key => $value) {
@@ -90,21 +72,5 @@ class TypedCollectionSequenceHandler implements SequenceHandlerInterface
         }
 
         return new Collection($type, $elements);
-    }
-
-    /**
-     * @param string $methodName
-     * @throws HandlerException
-     * @return void
-     */
-    private function throwUnsupportedException(string $methodName): void
-    {
-        throw new HandlerException(\sprintf(
-            'The `%s` can only handle instances of `%s`. Illegal invocation of method `%s`. You should invoke the `%s` method first!',
-            __CLASS__,
-            Collection::class,
-            $methodName,
-            'supports'
-        ));
     }
 }
