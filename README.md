@@ -40,7 +40,7 @@ require 'vendor/autoload.php';
 
 // get factory and register handlers
 $factory = (new \Jojo1981\DataResolver\Factory())
-    ->useDefaultPropertyHandlers()
+    ->useDefaultSequenceHandlers()
     ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler())
     ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler());
 
