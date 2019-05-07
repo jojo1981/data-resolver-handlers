@@ -38,17 +38,11 @@ composer require jojo1981/data-resolver-handlers
 
 require 'vendor/autoload.php';
 
-// get handler factory and set sequence handlers
-$handlerFactory = new \Jojo1981\DataResolver\Factory\HandlerFactory();
-$handlerFactory->setSequenceHandlers([
-    new \Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler(),
-    new \Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler(),
-    new \Jojo1981\DataResolver\Handler\SequenceHandler\ArraySequenceHandler()
-]);
-
-// get main factory and inject handler factory
-$factory = new \Jojo1981\DataResolver\Factory();
-$factory->setHandlerFactory($handlerFactory);
+// get factory and register handlers
+$factory = (new \Jojo1981\DataResolver\Factory())
+    ->useDefaultPropertyHandlers()
+    ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler())
+    ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler());
 
 // get resolver builder factory
 $resolverBuilderFactory = $factory->getResolverBuilderFactory();
