@@ -450,6 +450,24 @@ class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
+     * @test
+     *
+     * @throws InvalidArgumentException
+     * @throws ExpectationFailedException
+     * @throws CollectionException
+     * @throws HandlerException
+     * @return void
+     */
+    public function performFlattenShouldReturnAnEmptyCollectionOfTheSameTypeWhenAnEmptyCollectionIsPassed(): void
+    {
+        /** @var Collection $result */
+        $result = $this->getTypedCollectionSequenceHandler()->flatten(new Collection('string'), static function () {});
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertTrue($result->isEmpty());
+        $this->assertEquals('string', $result->getType());
+    }
+
+    /**
      * @return TypedCollectionSequenceHandler
      */
     private function getTypedCollectionSequenceHandler(): TypedCollectionSequenceHandler

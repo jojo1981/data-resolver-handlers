@@ -55,7 +55,7 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
     protected function performFlatten($data, callable $callback): Collection
     {
         $elements = [];
-        $type = null;
+        $type = $data instanceof Collection ? $data->getType() : null;
         foreach ($data as $key => $value) {
             $callbackResult = $callback($key, $value);
             if ($callbackResult instanceof Collection) {
