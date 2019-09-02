@@ -41,6 +41,9 @@ require 'vendor/autoload.php';
 // get factory and register handlers
 $factory = (new \Jojo1981\DataResolver\Factory())
     ->useDefaultSequenceHandlers()
+    ->setMergeHandler(new \Jojo1981\DataResolverHandlers\TypedCollectionMergeHandlerDecorator(
+        new \Jojo1981\DataResolver\Handler\MergeHandler\DefaultMergeHandler()    
+    ))
     ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler())
     ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler());
 
