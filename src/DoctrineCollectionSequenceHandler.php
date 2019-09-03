@@ -54,8 +54,9 @@ class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandle
         $result->clear();
 
         foreach ($data as $key => $value) {
-            $items = (array) $callback($key, $value);
-            foreach ($items as $item) {
+            $callbackResult = $callback($key, $value);
+            $callbackResult = \is_array($callbackResult) ? $callbackResult : [$callbackResult];
+            foreach ($callbackResult as $item) {
                 $result->add($item);
             }
         }

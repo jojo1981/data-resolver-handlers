@@ -63,8 +63,7 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
                 $callbackResult = $callbackResult->toArray();
             }
 
-            $callbackResult = \is_array($callbackResult) ? $callbackResult : (array) $callbackResult;
-
+            $callbackResult = \is_array($callbackResult) ? $callbackResult : [$callbackResult];
             if (!empty($callbackResult)) {
                 $type = TypeChecker::getType(\end($callbackResult));
                 \array_push($elements, ...$callbackResult);
