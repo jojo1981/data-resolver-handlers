@@ -107,7 +107,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
             'invoke the `supports` method first!'
         ));
 
-        $this->getTypedCollectionSequenceHandler()->filter('Not supported data', function () {});
+        $this->getTypedCollectionSequenceHandler()->filter('Not supported data', static function () {});
     }
 
     /**
@@ -125,7 +125,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
             'invoke the `supports` method first!'
         ));
 
-        $this->getTypedCollectionSequenceHandler()->flatten('Not supported data', function () {});
+        $this->getTypedCollectionSequenceHandler()->flatten('Not supported data', static function () {});
     }
 
     /**
@@ -231,7 +231,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
             [(object) ['name' => 'value4'], 3]
         ];
 
-        $callback = function (int $index, $value) use (&$calledTimes, $expectedCallArguments) {
+        $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
             $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
@@ -296,7 +296,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
             [(object) ['name' => 'value4'], 3]
         ];
 
-        $callback = function (int $index, $value) use (&$calledTimes, $expectedCallArguments) {
+        $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
             $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
@@ -361,7 +361,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
             [(object) ['name' => 'value4'], 3]
         ];
 
-        $callback = function (int $index, $value) use (&$calledTimes, $expectedCallArguments) {
+        $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
             $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
@@ -426,7 +426,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
             [(object) ['name' => 'value4'], 3]
         ];
 
-        $callback = function (int $index, $value) use (&$calledTimes, $expectedCallArguments) {
+        $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
             $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 

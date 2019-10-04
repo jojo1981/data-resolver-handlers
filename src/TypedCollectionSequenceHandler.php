@@ -57,7 +57,7 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
         $elements = [];
         $type = $data instanceof Collection ? $data->getType() : null;
         foreach ($data as $key => $value) {
-            $callbackResult = $callback($key, $value);
+            $callbackResult = $callback($value, $key);
             if ($callbackResult instanceof Collection) {
                 $type = $type ?? $callbackResult->getType();
                 $callbackResult = $callbackResult->toArray();
