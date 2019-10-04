@@ -200,29 +200,57 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
             'key2' => [
                 'name' => [
                     'value2.1',
-                    'value2.2'
+                    'value2.2',
+                    'value2.3'
                 ]
             ],
             'key3' => [
                 'name' => 'value3'
             ],
             'key4' => [
-                'name' => 'value4'
+                'name' => []
+            ],
+            'key5' => [
+                'name' => 'value5'
+            ],
+            'key6' => [
+                'name' => null
+            ],
+            'key7' => [
+                'name' => [
+                    'key1' => 'value7.1',
+                    'key2' => 'value7.2',
+                ]
+            ],
+            'key8' => [
+                'name' => false
+            ],
+            'key9' => [
+                'name' => true
+            ],
+            'key10' => [
+                'name' => new ArrayCollection(['value10.1', 'value10.2'])
             ]
         ];
         $originalCollection = new ArrayCollection($elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
+        $this->assertEquals(10, $originalCollection->count());
         $this->assertSame($elements, $originalCollection->toArray());
 
         // test flatten
         $calledTimes = 0;
         $expectedCallArguments = [
             [['name' => 'value1'], 'key1'],
-            [['name' => ['value2.1', 'value2.2']], 'key2'],
+            [['name' => ['value2.1', 'value2.2', 'value2.3']], 'key2'],
             [['name' => 'value3'], 'key3'],
-            [['name' => 'value4'], 'key4']
+            [['name' => []], 'key4'],
+            [['name' => 'value5'], 'key5'],
+            [['name' => null], 'key6'],
+            [['name' => ['key1' => 'value7.1', 'key2' => 'value7.2',]], 'key7'],
+            [['name' => false], 'key8'],
+            [['name' => true], 'key9'],
+            [['name' => new ArrayCollection(['value10.1', 'value10.2'])], 'key10']
         ];
 
         $callback = function (array $value, string $key) use (&$calledTimes, $expectedCallArguments) {
@@ -232,17 +260,17 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
             return $value['name'];
         };
         $flattenCollection = $this->getDoctrineCollectionSequenceHandler()->flatten($originalCollection, $callback);
-        $this->assertSame(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        $this->assertSame(10, $calledTimes, 'Callback is expected to be called exactly 4 times');
         $this->assertInstanceOf(ArrayCollection::class, $flattenCollection);
         $this->assertNotSame($flattenCollection, $originalCollection);
-        $this->assertEquals(5, $flattenCollection->count());
+        $this->assertEquals(12, $flattenCollection->count());
         $this->assertEquals(
-            ['value1', 'value2.1', 'value2.2', 'value3', 'value4'],
+            ['value1', 'value2.1', 'value2.2', 'value2.3', 'value3', 'value5', 'value7.1', 'value7.2', false, true, 'value10.1', 'value10.2'],
             $flattenCollection->toArray()
         );
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
+        $this->assertEquals(10, $originalCollection->count());
         $this->assertSame($elements, $originalCollection->toArray());
     }
 

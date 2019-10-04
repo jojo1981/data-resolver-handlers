@@ -55,12 +55,31 @@ class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandle
 
         foreach ($data as $key => $value) {
             $callbackResult = $callback($value, $key);
-            $callbackResult = \is_array($callbackResult) ? $callbackResult : [$callbackResult];
+            if (null === $callbackResult) {
+                continue;
+            }
+            $callbackResult = !\is_array($callbackResult) ? [$callbackResult] : \array_values($callbackResult);
             foreach ($callbackResult as $item) {
-                $result->add($item);
+                $this->addToCollection($result, $item);
             }
         }
 
         return $result;
+    }
+
+    /**
+     * @param Collection $target
+     * @param mixed $element
+     * @return void
+     */
+    private function addToCollection(Collection $target, $element): void
+    {
+        if ($element instanceof Collection) {
+            foreach ($element as $item) {
+                $target->add($item);
+            }
+        } else {
+            $target->add($element);
+        }
     }
 }
