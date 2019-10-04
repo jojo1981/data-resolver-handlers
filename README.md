@@ -43,9 +43,13 @@ $factory = (new \Jojo1981\DataResolver\Factory())
     ->useDefaultSequenceHandlers()
     ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler())
     ->registerSequenceHandler(new \Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler())
-    ->setMergeHandler(new \Jojo1981\DataResolverHandlers\TypedCollectionMergeHandlerDecorator(
-        new \Jojo1981\DataResolver\Handler\MergeHandler\DefaultMergeHandler()    
-    ));
+    ->setMergeHandler(
+        new \Jojo1981\DataResolverHandlers\DoctrineCollectionMergeHandlerDecorator(
+            new \Jojo1981\DataResolverHandlers\TypedCollectionMergeHandlerDecorator(
+                new \Jojo1981\DataResolver\Handler\MergeHandler\DefaultMergeHandler()    
+            )
+        )
+    );
 
 // get resolver builder factory
 $resolverBuilderFactory = $factory->getResolverBuilderFactory();
