@@ -65,55 +65,53 @@ class DoctrineCollectionIntegrationTest extends TestCase
      */
     public function integrationTestFlatten(): void
     {
-        $testData = new ArrayCollection($this->getTestData());
-
         $expected = new ArrayCollection(['Doe', 'Roe']);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('last_name'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
 
         $expected = new ArrayCollection([32, 30]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('age'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
 
         $expected = new ArrayCollection(['child1', 'child3', 'child2', 'child4']);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('children'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
     }
 
     /**
      * @test
      *
-     * @throws HandlerException
      * @throws PredicateException
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws ExtractorException
+     * @throws ResolverException
+     * @throws HandlerException
      * @return void
      */
     public function integrationTestFilter(): void
     {
-        $testData = new ArrayCollection($this->getTestData());
         $expected = new ArrayCollection([0 => $this->getJohnDoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('firstName')->equals('John'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
 
         $expected = new ArrayCollection([1 => $this->getJaneRoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('lastName')->equals('Roe'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
     }
 
@@ -129,21 +127,36 @@ class DoctrineCollectionIntegrationTest extends TestCase
      */
     public function integrationTestMerge(): void
     {
-        $testData = new ArrayCollection($this->getTestData());
         $expected = new ArrayCollection([$this->getAddress1(), $this->getAddress2()]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('primaryAddresses', 'secondaryAddresses'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
     }
 
     /**
-     * @return \stdClass[]
+     * @test
+     *
+     * @throws ExtractorException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @throws PredicateException
+     * @throws ExpectationFailedException
+     * @return void
      */
-    private function getTestData(): array
+    public function integrationTestCount(): void
     {
-        return [$this->getJohnDoe(), $this->getJaneRoe()];
+        $this->assertEquals(0, $this->resolverBuilderFactory->count()->build()->resolve(new ArrayCollection()));
+        $this->assertEquals(2, $this->resolverBuilderFactory->count()->build()->resolve($this->getTestData()));
+    }
+
+    /**
+     * @return ArrayCollection|\stdClass[]
+     */
+    private function getTestData(): ArrayCollection
+    {
+        return new ArrayCollection([$this->getJohnDoe(), $this->getJaneRoe()]);
     }
 
     /**

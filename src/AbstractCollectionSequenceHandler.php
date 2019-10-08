@@ -73,6 +73,20 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
     }
 
     /**
+     * @param mixed $data
+     * @throws HandlerException
+     * @return int
+     */
+    final public function count($data): int
+    {
+        if (!$this->supports($data)) {
+            $this->throwUnsupportedException('count');
+        }
+
+        return $this->performCount($data);
+    }
+
+    /**
      * @param string $methodName
      * @throws HandlerException
      * @return void
@@ -113,4 +127,10 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @return mixed
      */
     abstract protected function performFlatten($data, callable $callback);
+
+    /**
+     * @param mixed $data
+     * @return int
+     */
+    abstract protected function performCount($data): int;
 }

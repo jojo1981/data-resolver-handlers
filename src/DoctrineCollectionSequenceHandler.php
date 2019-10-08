@@ -68,6 +68,15 @@ class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandle
     }
 
     /**
+     * @param mixed|Collection $data
+     * @return int
+     */
+    protected function performCount($data): int
+    {
+        return $data->count();
+    }
+
+    /**
      * @param Collection $target
      * @param mixed $element
      * @return void

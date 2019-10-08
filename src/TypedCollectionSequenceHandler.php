@@ -48,6 +48,15 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
 
     /**
      * @param mixed|Collection $data
+     * @return int
+     */
+    protected function performCount($data): int
+    {
+        return $data->count();
+    }
+
+    /**
+     * @param mixed|Collection $data
      * @param callable $callback
      * @throws CollectionException
      * @return Collection

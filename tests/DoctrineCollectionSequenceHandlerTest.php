@@ -105,7 +105,7 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
             'invoke the `supports` method first!'
         ));
 
-        $this->getDoctrineCollectionSequenceHandler()->filter('Not supported data', function () {});
+        $this->getDoctrineCollectionSequenceHandler()->filter('Not supported data', static function () {});
     }
 
     /**
@@ -122,7 +122,24 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
             'invoke the `supports` method first!'
         ));
 
-        $this->getDoctrineCollectionSequenceHandler()->flatten('Not supported data', function () {});
+        $this->getDoctrineCollectionSequenceHandler()->flatten('Not supported data', static function () {});
+    }
+
+    /**
+     * @test
+     *
+     * @throws HandlerException
+     * @return void
+     */
+    public function countShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
+    {
+        $this->expectExceptionObject(new HandlerException(
+            'The `' . DoctrineCollectionSequenceHandler::class . '` can only handle instances of ' .
+            '`' . Collection::class . '`. Illegal invocation of method `count`. You should ' .
+            'invoke the `supports` method first!'
+        ));
+
+        $this->getDoctrineCollectionSequenceHandler()->count('Not supported data');
     }
 
     /**
@@ -272,6 +289,20 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
         // assert no side effect are occurred and original collection is not changed
         $this->assertEquals(10, $originalCollection->count());
         $this->assertSame($elements, $originalCollection->toArray());
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     * @throws ExpectationFailedException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     */
+    public function staticShouldReturnTheCountOfThePassedCollection(): void
+    {
+        $this->assertEquals(0, $this->getDoctrineCollectionSequenceHandler()->count(new ArrayCollection()));
+        $this->assertEquals(3, $this->getDoctrineCollectionSequenceHandler()->count(new ArrayCollection([1, 2, 3])));
     }
 
     /**

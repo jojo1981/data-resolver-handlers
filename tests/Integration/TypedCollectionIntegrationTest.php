@@ -67,56 +67,54 @@ class TypedCollectionIntegrationTest extends TestCase
      */
     public function integrationTestFlatten(): void
     {
-        $testData = new Collection(\stdClass::class, $this->getTestData());
-
         $expected = new Collection('string', ['Doe', 'Roe']);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('last_name'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
 
         $expected = new Collection('integer', [32, 30]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('age'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
 
         $expected = new Collection('string', ['child1', 'child3', 'child2', 'child4']);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('children'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
     }
 
     /**
      * @test
      *
-     * @throws PredicateException
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
      * @throws ExtractorException
      * @throws CollectionException
      * @throws HandlerException
+     * @throws ResolverException
+     * @throws PredicateException
      * @return void
      */
     public function integrationTestFilter(): void
     {
-        $testData = new Collection(\stdClass::class, $this->getTestData());
         $expected = new Collection(\stdClass::class, [0 => $this->getJohnDoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('firstName')->equals('John'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
 
         $expected = new Collection(\stdClass::class, [1 => $this->getJaneRoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('lastName')->equals('Roe'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
     }
 
@@ -133,22 +131,38 @@ class TypedCollectionIntegrationTest extends TestCase
      */
     public function integrationTestMerge(): void
     {
-        $testData = new Collection(\stdClass::class, $this->getTestData());
         $expected = new Collection(\stdClass::class, [$this->getAddress1(), $this->getAddress2()]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('primaryAddresses', 'secondaryAddresses'))
             ->build()
-            ->resolve($testData);
+            ->resolve($this->getTestData());
         $this->assertEquals($expected, $actual);
     }
 
     /**
+     * @test
+     *
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @throws PredicateException
+     * @throws ExpectationFailedException
      * @throws CollectionException
-     * @return \stdClass[]
+     * @throws ExtractorException
+     * @return void
      */
-    private function getTestData(): array
+    public function integrationTestCount(): void
     {
-        return [$this->getJohnDoe(), $this->getJaneRoe()];
+        $this->assertEquals(0, $this->resolverBuilderFactory->count()->build()->resolve(new Collection('string')));
+        $this->assertEquals(2, $this->resolverBuilderFactory->count()->build()->resolve($this->getTestData()));
+    }
+
+    /**
+     * @throws CollectionException
+     * @return Collection|\stdClass[]
+     */
+    private function getTestData(): Collection
+    {
+        return new Collection(\stdClass::class, [$this->getJohnDoe(), $this->getJaneRoe()]);
     }
 
     /**

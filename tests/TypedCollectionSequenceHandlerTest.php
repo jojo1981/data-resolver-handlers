@@ -95,7 +95,6 @@ class TypedCollectionSequenceHandlerTest extends TestCase
     /**
      * @test
      *
-     * @throws CollectionException
      * @throws HandlerException
      * @return void
      */
@@ -113,7 +112,6 @@ class TypedCollectionSequenceHandlerTest extends TestCase
     /**
      * @test
      *
-     * @throws CollectionException
      * @throws HandlerException
      * @return void
      */
@@ -126,6 +124,23 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         ));
 
         $this->getTypedCollectionSequenceHandler()->flatten('Not supported data', static function () {});
+    }
+
+    /**
+     * @test
+     *
+     * @throws HandlerException
+     * @return void
+     */
+    public function countShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
+    {
+        $this->expectExceptionObject(new HandlerException(
+            'The `Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler` can only handle instances of ' .
+            '`Jojo1981\TypedCollection\Collection`. Illegal invocation of method `count`. You should ' .
+            'invoke the `supports` method first!'
+        ));
+
+        $this->getTypedCollectionSequenceHandler()->count('Not supported data');
     }
 
     /**
@@ -465,6 +480,21 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertTrue($result->isEmpty());
         $this->assertEquals('string', $result->getType());
+    }
+
+    /**
+     * @test
+     *
+     * @throws HandlerException
+     * @throws CollectionException
+     * @throws ExpectationFailedException
+     * @throws InvalidArgumentException
+     * @return void
+     */
+    public function staticShouldReturnTheCountOfThePassedCollection(): void
+    {
+        $this->assertEquals(0, $this->getTypedCollectionSequenceHandler()->count(new Collection('string')));
+        $this->assertEquals(3, $this->getTypedCollectionSequenceHandler()->count(new Collection('integer', [1, 2, 3])));
     }
 
     /**
