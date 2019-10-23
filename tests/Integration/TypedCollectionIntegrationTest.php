@@ -152,8 +152,8 @@ class TypedCollectionIntegrationTest extends TestCase
      */
     public function integrationTestCount(): void
     {
-        $this->assertEquals(0, $this->resolverBuilderFactory->count()->build()->resolve(new Collection('string')));
-        $this->assertEquals(2, $this->resolverBuilderFactory->count()->build()->resolve($this->getTestData()));
+        $this->assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new Collection('string')));
+        $this->assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));
     }
 
     /**
