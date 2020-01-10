@@ -9,9 +9,10 @@
  */
 namespace Jojo1981\DataResolverHandlers;
 
+use Jojo1981\PhpTypes\AbstractType;
+use Jojo1981\PhpTypes\Exception\TypeException;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
-use Jojo1981\TypedCollection\TypeChecker;
 
 /**
  * @package Jojo1981\DataResolverHandlers
@@ -58,6 +59,7 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
     /**
      * @param mixed|Collection $data
      * @param callable $callback
+     * @throws TypeException
      * @throws CollectionException
      * @return Collection
      */
@@ -74,7 +76,7 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
 
             $callbackResult = \is_array($callbackResult) ? $callbackResult : [$callbackResult];
             if (!empty($callbackResult)) {
-                $type = TypeChecker::getType(\end($callbackResult));
+                $type = (AbstractType::createFromValue(\end($callbackResult)))->getName();
                 \array_push($elements, ...$callbackResult);
             }
         }

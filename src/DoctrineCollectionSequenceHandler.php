@@ -26,6 +26,7 @@ class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandle
 
     /**
      * @param mixed|Collection $data
+     * @throws \Exception
      * @return \Traversable
      */
     protected function performGetIterator($data): \Traversable

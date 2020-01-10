@@ -455,7 +455,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         } catch (CollectionException $exception) {
             // nothing to do
         }
-        $this->assertEquals(new CollectionException('Data is not of expected type: `string`, but of type: `integer`'), $exception);
+        $this->assertEquals(new CollectionException('Data is not of expected type: `string`, but of type: `int`'), $exception);
         $this->assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
         $this->assertNull($flattenCollection);
 
