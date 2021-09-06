@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpRedundantCatchClauseInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -9,30 +11,38 @@
  */
 namespace tests\Jojo1981\DataResolverHandlers;
 
+use ArrayIterator;
 use Jojo1981\DataResolver\Handler\Exception\HandlerException;
 use Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\CollectionIterator;
 use Jojo1981\TypedCollection\Exception\CollectionException;
+use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Exception\Doubler\ClassNotFoundException;
 use Prophecy\Exception\Doubler\DoubleException;
 use Prophecy\Exception\Doubler\InterfaceNotFoundException;
 use Prophecy\Exception\Prophecy\ObjectProphecyException;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
+use RuntimeException;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use stdClass;
+use function array_values;
 
 /**
  * @package tests\Jojo1981\DataResolverHandlers
  */
-class TypedCollectionSequenceHandlerTest extends TestCase
+final class TypedCollectionSequenceHandlerTest extends TestCase
 {
-    /** @var ObjectProphecy|Collection */
-    private $originalCollection;
+    use ProphecyTrait;
 
     /** @var ObjectProphecy|Collection */
-    private $returnedCollection;
+    private ObjectProphecy $originalCollection;
+
+    /** @var ObjectProphecy|Collection */
+    private ObjectProphecy $returnedCollection;
 
     /**
      * @return void
@@ -55,11 +65,9 @@ class TypedCollectionSequenceHandlerTest extends TestCase
      */
     public function supportShouldReturnFalseForDataWhichIsNotACollection(): void
     {
-        $this->assertFalse($this->getTypedCollectionSequenceHandler()->supports([]));
-        $this->assertFalse($this->getTypedCollectionSequenceHandler()->supports(['key' => 'value']));
-        $this->assertFalse($this->getTypedCollectionSequenceHandler()->supports(
-            new \ArrayIterator(['key' => 'value']))
-        );
+        self::assertFalse($this->getTypedCollectionSequenceHandler()->supports([]));
+        self::assertFalse($this->getTypedCollectionSequenceHandler()->supports(['key' => 'value']));
+        self::assertFalse($this->getTypedCollectionSequenceHandler()->supports(new ArrayIterator(['key' => 'value'])));
     }
 
     /**
@@ -72,7 +80,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
      */
     public function supportShouldReturnTrueForCollection(): void
     {
-        $this->assertTrue($this->getTypedCollectionSequenceHandler()->supports($this->originalCollection->reveal()));
+        self::assertTrue($this->getTypedCollectionSequenceHandler()->supports($this->originalCollection->reveal()));
     }
 
     /**
@@ -154,9 +162,9 @@ class TypedCollectionSequenceHandlerTest extends TestCase
      */
     public function getIteratorShouldReturnTheIteratorFromTheCollection(): void
     {
-        $iterator = new CollectionIterator(new \ArrayIterator([]));
+        $iterator = new CollectionIterator(new ArrayIterator([]));
         $this->originalCollection->getIterator()->willReturn($iterator)->shouldBeCalledOnce();
-        $this->assertSame(
+        self::assertSame(
             $iterator,
             $this->getTypedCollectionSequenceHandler()->getIterator($this->originalCollection->reveal())
         );
@@ -165,11 +173,13 @@ class TypedCollectionSequenceHandlerTest extends TestCase
     /**
      * @test
      *
-     * @throws CollectionException
+     * @return void
+     * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
-     * @return void
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function filterShouldReturnTheFilterResultOfTheCollection(): void
     {
@@ -177,40 +187,42 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         $originalCollection = new Collection('string', $elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertEquals(array_values($elements), $originalCollection->toArray());
 
         // test filter
         $calledTimes = 0;
         $expectedCallArguments = [['value1', 0], ['value2', 1], ['value3', 2], ['value4', 3]];
         $callback = function (string $value, int $index) use (&$calledTimes, $expectedCallArguments): bool {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
             return 'value2' !== $value && 2 !== $index;
         };
 
         $filteredCollection = $this->getTypedCollectionSequenceHandler()->filter($originalCollection, $callback);
-        $this->assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertInstanceOf(Collection::class, $filteredCollection);
-        $this->assertNotSame($filteredCollection, $originalCollection);
-        $this->assertEquals(2, $filteredCollection->count());
-        $this->assertEquals('string', $filteredCollection->getType());
-        $this->assertEquals(['value1', 'value4'], $filteredCollection->toArray());
+        self::assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertInstanceOf(Collection::class, $filteredCollection);
+        self::assertNotSame($filteredCollection, $originalCollection);
+        self::assertEquals(2, $filteredCollection->count());
+        self::assertEquals('string', $filteredCollection->getType());
+        self::assertEquals(['value1', 'value4'], $filteredCollection->toArray());
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertEquals(array_values($elements), $originalCollection->toArray());
     }
 
     /**
      * @test
      *
-     * @throws CollectionException
+     * @return void
+     * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
-     * @return void
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAStringValue(): void
     {
@@ -231,11 +243,11 @@ class TypedCollectionSequenceHandlerTest extends TestCase
                 'name' => 'value4'
             ]
         ];
-        $originalCollection = new Collection(\stdClass::class, $elements);
+        $originalCollection = new Collection(stdClass::class, $elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertEquals(array_values($elements), $originalCollection->toArray());
 
         // test flatten
         $calledTimes = 0;
@@ -247,35 +259,37 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         ];
 
         $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
             return $value->name;
         };
         $flattenCollection = $this->getTypedCollectionSequenceHandler()->flatten($originalCollection, $callback);
-        $this->assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertInstanceOf(Collection::class, $flattenCollection);
-        $this->assertNotSame($flattenCollection, $originalCollection);
-        $this->assertEquals(5, $flattenCollection->count());
-        $this->assertEquals('string', $flattenCollection->getType());
-        $this->assertEquals(
+        self::assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertInstanceOf(Collection::class, $flattenCollection);
+        self::assertNotSame($flattenCollection, $originalCollection);
+        self::assertEquals(5, $flattenCollection->count());
+        self::assertEquals('string', $flattenCollection->getType());
+        self::assertEquals(
             ['value1', 'value2.1', 'value2.2', 'value3', 'value4'],
             $flattenCollection->toArray()
         );
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertSame(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
      * @test
      *
-     * @throws CollectionException
+     * @return void
+     * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
-     * @return void
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAnArrayAnTheLastElementIsAString(): void
     {
@@ -296,11 +310,11 @@ class TypedCollectionSequenceHandlerTest extends TestCase
                 'name' => 'value4'
             ]
         ];
-        $originalCollection = new Collection(\stdClass::class, $elements);
+        $originalCollection = new Collection(stdClass::class, $elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertEquals(array_values($elements), $originalCollection->toArray());
 
         // test flatten
         $calledTimes = 0;
@@ -312,35 +326,37 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         ];
 
         $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
             return $value->name;
         };
         $flattenCollection = $this->getTypedCollectionSequenceHandler()->flatten($originalCollection, $callback);
-        $this->assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertInstanceOf(Collection::class, $flattenCollection);
-        $this->assertNotSame($flattenCollection, $originalCollection);
-        $this->assertEquals(5, $flattenCollection->count());
-        $this->assertEquals('string', $flattenCollection->getType());
-        $this->assertEquals(
+        self::assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertInstanceOf(Collection::class, $flattenCollection);
+        self::assertNotSame($flattenCollection, $originalCollection);
+        self::assertEquals(5, $flattenCollection->count());
+        self::assertEquals('string', $flattenCollection->getType());
+        self::assertEquals(
             ['value1', 'value2.1', 'value2.2', 'value3', 'value4'],
             $flattenCollection->toArray()
         );
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertSame(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
      * @test
      *
-     * @throws CollectionException
+     * @return void
+     * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
-     * @return void
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsACollection(): void
     {
@@ -361,11 +377,11 @@ class TypedCollectionSequenceHandlerTest extends TestCase
                 'name' => 'value4'
             ]
         ];
-        $originalCollection = new Collection(\stdClass::class, $elements);
+        $originalCollection = new Collection(stdClass::class, $elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertEquals(array_values($elements), $originalCollection->toArray());
 
         // test flatten
         $calledTimes = 0;
@@ -377,35 +393,37 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         ];
 
         $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
             return $value->name;
         };
         $flattenCollection = $this->getTypedCollectionSequenceHandler()->flatten($originalCollection, $callback);
-        $this->assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertInstanceOf(Collection::class, $flattenCollection);
-        $this->assertNotSame($flattenCollection, $originalCollection);
-        $this->assertEquals(5, $flattenCollection->count());
-        $this->assertEquals('string', $flattenCollection->getType());
-        $this->assertEquals(
+        self::assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertInstanceOf(Collection::class, $flattenCollection);
+        self::assertNotSame($flattenCollection, $originalCollection);
+        self::assertEquals(5, $flattenCollection->count());
+        self::assertEquals('string', $flattenCollection->getType());
+        self::assertEquals(
             ['value1', 'value2.1', 'value2.2', 'value3', 'value4'],
             $flattenCollection->toArray()
         );
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertSame(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
      * @test
      *
-     * @throws CollectionException
+     * @return void
+     * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
-     * @return void
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function flattenShouldThrowACollectionExceptionWhenAnElementIsNotMatchingTheDeterminedType(): void
     {
@@ -426,11 +444,11 @@ class TypedCollectionSequenceHandlerTest extends TestCase
                 'name' => 'value4'
             ]
         ];
-        $originalCollection = new Collection(\stdClass::class, $elements);
+        $originalCollection = new Collection(stdClass::class, $elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertEquals(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertEquals(array_values($elements), $originalCollection->toArray());
 
         // test flatten
         $calledTimes = 0;
@@ -442,7 +460,7 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         ];
 
         $callback = function ($value, int $index) use (&$calledTimes, $expectedCallArguments) {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
             return $value->name;
@@ -455,46 +473,51 @@ class TypedCollectionSequenceHandlerTest extends TestCase
         } catch (CollectionException $exception) {
             // nothing to do
         }
-        $this->assertEquals(new CollectionException('Data is not of expected type: `string`, but of type: `int`'), $exception);
-        $this->assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertNull($flattenCollection);
+        self::assertInstanceOf(CollectionException::class, $exception);
+        self::assertEquals('Data is not of expected type: `string`, but of type: `int`', $exception->getMessage());
+
+        self::assertEquals(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertNull($flattenCollection);
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertSame(\array_values($elements), $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
      * @test
      *
-     * @throws InvalidArgumentException
-     * @throws ExpectationFailedException
-     * @throws CollectionException
-     * @throws HandlerException
      * @return void
+     * @throws Exception
+     * @throws ExpectationFailedException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function performFlattenShouldReturnAnEmptyCollectionOfTheSameTypeWhenAnEmptyCollectionIsPassed(): void
     {
         /** @var Collection $result */
         $result = $this->getTypedCollectionSequenceHandler()->flatten(new Collection('string'), static function () {});
-        $this->assertInstanceOf(Collection::class, $result);
-        $this->assertTrue($result->isEmpty());
-        $this->assertEquals('string', $result->getType());
+        self::assertInstanceOf(Collection::class, $result);
+        self::assertTrue($result->isEmpty());
+        self::assertEquals('string', $result->getType());
     }
 
     /**
      * @test
      *
-     * @throws HandlerException
-     * @throws CollectionException
-     * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
      * @return void
+     * @throws ExpectationFailedException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function staticShouldReturnTheCountOfThePassedCollection(): void
     {
-        $this->assertEquals(0, $this->getTypedCollectionSequenceHandler()->count(new Collection('string')));
-        $this->assertEquals(3, $this->getTypedCollectionSequenceHandler()->count(new Collection('integer', [1, 2, 3])));
+        self::assertEquals(0, $this->getTypedCollectionSequenceHandler()->count(new Collection('string')));
+        self::assertEquals(3, $this->getTypedCollectionSequenceHandler()->count(new Collection('integer', [1, 2, 3])));
     }
 
     /**

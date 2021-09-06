@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -24,14 +24,15 @@ use Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use stdClass;
 
 /**
  * @package tests\Jojo1981\DataResolverHandlers\Integration
  */
-class DoctrineCollectionIntegrationTest extends TestCase
+final class DoctrineCollectionIntegrationTest extends TestCase
 {
     /** @var ResolverBuilderFactory */
-    private $resolverBuilderFactory;
+    private ResolverBuilderFactory $resolverBuilderFactory;
 
     /**
      * @throws ResolverException
@@ -55,6 +56,7 @@ class DoctrineCollectionIntegrationTest extends TestCase
 
     /**
      * @test
+     * @coversNothing
      *
      * @throws HandlerException
      * @throws PredicateException
@@ -70,25 +72,26 @@ class DoctrineCollectionIntegrationTest extends TestCase
             ->flatten($this->resolverBuilderFactory->get('last_name'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
 
         $expected = new ArrayCollection([32, 30]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('age'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
 
         $expected = new ArrayCollection(['child1', 'child3', 'child2', 'child4']);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('children'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
      * @test
+     * @coversNothing
      *
      * @throws PredicateException
      * @throws ExpectationFailedException
@@ -105,18 +108,19 @@ class DoctrineCollectionIntegrationTest extends TestCase
             ->filter($this->resolverBuilderFactory->where('firstName')->equals('John'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
 
         $expected = new ArrayCollection([1 => $this->getJaneRoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('lastName')->equals('Roe'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
      * @test
+     * @coversNothing
      *
      * @throws HandlerException
      * @throws PredicateException
@@ -132,11 +136,12 @@ class DoctrineCollectionIntegrationTest extends TestCase
             ->flatten($this->resolverBuilderFactory->get('primaryAddresses', 'secondaryAddresses'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
      * @test
+     * @coversNothing
      *
      * @throws ExtractorException
      * @throws HandlerException
@@ -147,12 +152,12 @@ class DoctrineCollectionIntegrationTest extends TestCase
      */
     public function integrationTestCount(): void
     {
-        $this->assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new ArrayCollection()));
-        $this->assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));
+        self::assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new ArrayCollection()));
+        self::assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));
     }
 
     /**
-     * @return ArrayCollection|\stdClass[]
+     * @return ArrayCollection|stdClass[]
      */
     private function getTestData(): ArrayCollection
     {
@@ -160,11 +165,11 @@ class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function getJohnDoe(): \stdClass
+    private function getJohnDoe(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->first_name = 'John';
         $result->lastName = 'Doe';
         $result->age = 32;
@@ -176,11 +181,11 @@ class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function getJaneRoe(): \stdClass
+    private function getJaneRoe(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->first_name = ' Jane';
         $result->lastName = 'Roe';
         $result->age = 30;
@@ -192,11 +197,11 @@ class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function getAddress1(): \stdClass
+    private function getAddress1(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->street = '4402  Lincoln Drive';
         $result->city = 'Hummelstown';
         $result->state = 'Pennsylvania (PA)';
@@ -207,11 +212,11 @@ class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function getAddress2(): \stdClass
+    private function getAddress2(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->street = '1673  Rollins Road';
         $result->city = 'Potter';
         $result->state = 'Nebraska (NE)';

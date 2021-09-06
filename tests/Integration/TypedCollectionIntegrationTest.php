@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -24,15 +24,17 @@ use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use stdClass;
 
 /**
  * @package tests\Jojo1981\DataResolverHandlers\Integration
  */
-class TypedCollectionIntegrationTest extends TestCase
+final class TypedCollectionIntegrationTest extends TestCase
 {
     /** @var ResolverBuilderFactory */
-    private $resolverBuilderFactory;
+    private ResolverBuilderFactory $resolverBuilderFactory;
 
     /**
      * @throws ResolverException
@@ -56,14 +58,16 @@ class TypedCollectionIntegrationTest extends TestCase
 
     /**
      * @test
+     * @coversNothing
      *
-     * @throws PredicateException
-     * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
-     * @throws ExtractorException
-     * @throws CollectionException
-     * @throws HandlerException
      * @return void
+     * @throws ExpectationFailedException
+     * @throws ExtractorException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @throws PredicateException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function integrationTestFlatten(): void
     {
@@ -72,139 +76,148 @@ class TypedCollectionIntegrationTest extends TestCase
             ->flatten($this->resolverBuilderFactory->get('last_name'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
 
         $expected = new Collection('integer', [32, 30]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('age'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
 
         $expected = new Collection('string', ['child1', 'child3', 'child2', 'child4']);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('children'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
      * @test
+     * @coversNothing
      *
-     * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
-     * @throws ExtractorException
-     * @throws CollectionException
-     * @throws HandlerException
-     * @throws ResolverException
-     * @throws PredicateException
      * @return void
+     * @throws ExpectationFailedException
+     * @throws ExtractorException
+     * @throws Factory\Exception\FactoryException
+     * @throws HandlerException
+     * @throws InvalidArgumentException
+     * @throws PredicateException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function integrationTestFilter(): void
     {
-        $expected = new Collection(\stdClass::class, [0 => $this->getJohnDoe()]);
+        $expected = new Collection(stdClass::class, [0 => $this->getJohnDoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('firstName')->equals('John'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
 
-        $expected = new Collection(\stdClass::class, [1 => $this->getJaneRoe()]);
+        $expected = new Collection(stdClass::class, [1 => $this->getJaneRoe()]);
         $actual = $this->resolverBuilderFactory
             ->filter($this->resolverBuilderFactory->where('lastName')->equals('Roe'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
      * @test
+     * @coversNothing
      *
+     * @return void
      * @throws ExpectationFailedException
      * @throws ExtractorException
      * @throws HandlerException
      * @throws InvalidArgumentException
      * @throws PredicateException
+     * @throws RuntimeException
      * @throws CollectionException
-     * @return void
      */
     public function integrationTestMerge(): void
     {
-        $expected = new Collection(\stdClass::class, [$this->getAddress1(), $this->getAddress2()]);
+        $expected = new Collection(stdClass::class, [$this->getAddress1(), $this->getAddress2()]);
         $actual = $this->resolverBuilderFactory
             ->flatten($this->resolverBuilderFactory->get('primaryAddresses', 'secondaryAddresses'))
             ->build()
             ->resolve($this->getTestData());
-        $this->assertEquals($expected, $actual);
+        self::assertEquals($expected, $actual);
     }
 
     /**
      * @test
+     * @coversNothing
      *
+     * @return void
+     * @throws ExpectationFailedException
+     * @throws ExtractorException
      * @throws HandlerException
      * @throws InvalidArgumentException
      * @throws PredicateException
-     * @throws ExpectationFailedException
+     * @throws RuntimeException
      * @throws CollectionException
-     * @throws ExtractorException
-     * @return void
      */
     public function integrationTestCount(): void
     {
-        $this->assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new Collection('string')));
-        $this->assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));
+        self::assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new Collection('string')));
+        self::assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));
     }
 
     /**
+     * @return Collection|stdClass[]
+     * @throws RuntimeException
      * @throws CollectionException
-     * @return Collection|\stdClass[]
      */
     private function getTestData(): Collection
     {
-        return new Collection(\stdClass::class, [$this->getJohnDoe(), $this->getJaneRoe()]);
+        return new Collection(stdClass::class, [$this->getJohnDoe(), $this->getJaneRoe()]);
     }
 
     /**
+     * @return stdClass
+     * @throws RuntimeException
      * @throws CollectionException
-     * @return \stdClass
      */
-    private function getJohnDoe(): \stdClass
+    private function getJohnDoe(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->first_name = 'John';
         $result->lastName = 'Doe';
         $result->age = 32;
         $result->children = new Collection('string', ['child1', 'child3']);
-        $result->primaryAddresses = new Collection(\stdClass::class, [$this->getAddress1()]);
-        $result->secondaryAddresses = new Collection(\stdClass::class, [$this->getAddress2()]);
+        $result->primaryAddresses = new Collection(stdClass::class, [$this->getAddress1()]);
+        $result->secondaryAddresses = new Collection(stdClass::class, [$this->getAddress2()]);
 
         return $result;
     }
 
     /**
+     * @return stdClass
+     * @throws RuntimeException
      * @throws CollectionException
-     * @return \stdClass
      */
-    private function getJaneRoe(): \stdClass
+    private function getJaneRoe(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->first_name = ' Jane';
         $result->lastName = 'Roe';
         $result->age = 30;
         $result->children = new Collection('string', ['child2', 'child4']);
-        $result->primaryAddresses = new Collection(\stdClass::class);
-        $result->secondaryAddresses = new Collection(\stdClass::class);
+        $result->primaryAddresses = new Collection(stdClass::class);
+        $result->secondaryAddresses = new Collection(stdClass::class);
 
         return $result;
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function getAddress1(): \stdClass
+    private function getAddress1(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->street = '4402  Lincoln Drive';
         $result->city = 'Hummelstown';
         $result->state = 'Pennsylvania (PA)';
@@ -215,11 +228,11 @@ class TypedCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return \stdClass
+     * @return stdClass
      */
-    private function getAddress2(): \stdClass
+    private function getAddress2(): stdClass
     {
-        $result = new \stdClass();
+        $result = new stdClass();
         $result->street = '1673  Rollins Road';
         $result->city = 'Potter';
         $result->state = 'Nebraska (NE)';

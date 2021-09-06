@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -13,14 +13,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Jojo1981\DataResolver\Handler\MergeHandlerInterface;
 use Jojo1981\DataResolver\Resolver\Context;
+use function array_push;
+use function get_class;
+use function gettype;
+use function is_object;
 
 /**
  * @package Jojo1981\DataResolverHandlers
  */
-class DoctrineCollectionMergeHandlerDecorator implements MergeHandlerInterface
+final class DoctrineCollectionMergeHandlerDecorator implements MergeHandlerInterface
 {
     /** @var MergeHandlerInterface */
-    private $mergeHandler;
+    private MergeHandlerInterface $mergeHandler;
 
     /**
      * @param MergeHandlerInterface $mergeHandler
@@ -55,7 +59,7 @@ class DoctrineCollectionMergeHandlerDecorator implements MergeHandlerInterface
             if ($collection->isEmpty()) {
                 continue;
             }
-            \array_push($elements, ...$collection->getValues());
+            array_push($elements, ...$collection->getValues());
         }
 
         return new ArrayCollection($elements);
@@ -92,6 +96,6 @@ class DoctrineCollectionMergeHandlerDecorator implements MergeHandlerInterface
      */
     private function getType($item): string
     {
-        return \is_object($item) ? \get_class($item) : \gettype($item);
+        return is_object($item) ? get_class($item) : gettype($item);
     }
 }

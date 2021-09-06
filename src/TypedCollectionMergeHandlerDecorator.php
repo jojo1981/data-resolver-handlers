@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -13,14 +13,16 @@ use Jojo1981\DataResolver\Handler\MergeHandlerInterface;
 use Jojo1981\DataResolver\Resolver\Context;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
+use RuntimeException;
+use function array_shift;
 
 /**
  * @package Jojo1981\DataResolverHandlers
  */
-class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterface
+final class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterface
 {
     /** @var MergeHandlerInterface */
-    private $mergeHandler;
+    private MergeHandlerInterface $mergeHandler;
 
     /**
      * @param MergeHandlerInterface $mergeHandler
@@ -33,8 +35,9 @@ class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterface
     /**
      * @param Context $context
      * @param array $elements
-     * @throws CollectionException
      * @return mixed
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function merge(Context $context, array $elements)
     {
@@ -52,7 +55,7 @@ class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterface
     private function getTypeFromElements(array $elements): string
     {
         /** @var Collection $element */
-        $element = \array_shift($elements);
+        $element = array_shift($elements);
 
         return $element->getType();
     }

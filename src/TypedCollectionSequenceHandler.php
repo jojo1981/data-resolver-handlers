@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -13,11 +13,16 @@ use Jojo1981\PhpTypes\AbstractType;
 use Jojo1981\PhpTypes\Exception\TypeException;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
+use RuntimeException;
+use Traversable;
+use function array_push;
+use function end;
+use function is_array;
 
 /**
  * @package Jojo1981\DataResolverHandlers
  */
-class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
+final class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
 {
     /**
      * @return string
@@ -29,9 +34,9 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
 
     /**
      * @param mixed|Collection $data
-     * @return \Traversable
+     * @return Traversable
      */
-    protected function performGetIterator($data): \Traversable
+    protected function performGetIterator($data): Traversable
     {
         return $data->getIterator();
     }
@@ -39,8 +44,9 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
     /**
      * @param mixed|Collection $data
      * @param callable $callback
-     * @throws CollectionException
      * @return Collection
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     protected function performFilter($data, callable $callback): Collection
     {
@@ -59,9 +65,10 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
     /**
      * @param mixed|Collection $data
      * @param callable $callback
-     * @throws TypeException
-     * @throws CollectionException
      * @return Collection
+     * @throws TypeException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     protected function performFlatten($data, callable $callback): Collection
     {
@@ -74,10 +81,10 @@ class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHandler
                 $callbackResult = $callbackResult->toArray();
             }
 
-            $callbackResult = \is_array($callbackResult) ? $callbackResult : [$callbackResult];
+            $callbackResult = is_array($callbackResult) ? $callbackResult : [$callbackResult];
             if (!empty($callbackResult)) {
-                $type = (AbstractType::createFromValue(\end($callbackResult)))->getName();
-                \array_push($elements, ...$callbackResult);
+                $type = (AbstractType::createFromValue(end($callbackResult)))->getName();
+                array_push($elements, ...$callbackResult);
             }
         }
 

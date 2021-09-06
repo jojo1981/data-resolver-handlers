@@ -1,4 +1,7 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpStrictTypeCheckingInspection */
+/** @noinspection PhpParamsInspection */
+declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -14,6 +17,7 @@ use Jojo1981\DataResolver\Resolver\Context;
 use Jojo1981\DataResolverHandlers\TypedCollectionMergeHandlerDecorator;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
+use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -21,28 +25,32 @@ use Prophecy\Exception\Doubler\ClassNotFoundException;
 use Prophecy\Exception\Doubler\DoubleException;
 use Prophecy\Exception\Doubler\InterfaceNotFoundException;
 use Prophecy\Exception\Prophecy\ObjectProphecyException;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
+use RuntimeException;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 /**
  * @package tests\Jojo1981\DataResolverHandlers
  */
-class TypedCollectionMergeHandlerDecoratorTest extends TestCase
+final class TypedCollectionMergeHandlerDecoratorTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ObjectProphecy|MergeHandlerInterface */
-    private $mergeHandler;
+    private ObjectProphecy $mergeHandler;
 
     /** @var ObjectProphecy|Context */
-    private $context;
+    private ObjectProphecy $context;
 
     /** @var ObjectProphecy|Collection */
-    private $collection1;
+    private ObjectProphecy $collection1;
 
     /** @var ObjectProphecy|Collection */
-    private $collection2;
+    private ObjectProphecy $collection2;
 
     /** @var ObjectProphecy|Collection */
-    private $collection3;
+    private ObjectProphecy $collection3;
 
     /**
      * @throws DoubleException
@@ -69,9 +77,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws CollectionException
-     * @throws ObjectProphecyException
      * @return void
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function mergeWithoutCollectionsAndEmptyElementsShouldReturnValueFromDefaultMergeHandler(): void
     {
@@ -83,9 +92,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws CollectionException
-     * @throws ObjectProphecyException
      * @return void
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function mergeWithoutCollectionsAndWithElementsShouldReturnValueFromDefaultMergeHandler(): void
     {
@@ -97,9 +107,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
-     * @throws CollectionException
      * @return void
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function mergeWithOneCollectionsAndOtherDataShouldReturnValueFromDefaultMergeHandler(): void
     {
@@ -115,9 +126,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
-     * @throws CollectionException
      * @return void
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function mergeWithMultipleCollectionsAndOtherDataShouldReturnValueFromDefaultMergeHandler(): void
     {
@@ -135,9 +147,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
-     * @throws CollectionException
      * @return void
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function mergeWithMultipleCollectionsAndOtherDataFollowedByCollectionShouldReturnValueFromDefaultMergeHandler(): void
     {
@@ -158,9 +171,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
-     * @throws CollectionException
      * @return void
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
+     * @throws CollectionException
      */
     public function mergeWithCollectionsButNotWithSameTypeShouldReturnValueFromDefaultMergeHandler(): void
     {
@@ -179,11 +193,13 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
+     * @return void
+     * @throws Exception
      * @throws ExpectationFailedException
      * @throws InvalidArgumentException
+     * @throws ObjectProphecyException
+     * @throws RuntimeException
      * @throws CollectionException
-     * @return void
      */
     public function mergeWithCollectionsOfSameTypeShouldReturnOneCollectionWithAllElementsInIt(): void
     {
@@ -198,10 +214,10 @@ class TypedCollectionMergeHandlerDecoratorTest extends TestCase
 
         /** @var Collection $result */
         $result = $this->getTypedCollectionMergeHandler()->merge($this->context->reveal(), $elements);
-        $this->assertInstanceOf(Collection::class, $result);
-        $this->assertEquals('string', $result->getType());
-        $this->assertEquals(6, $result->count());
-        $this->assertEquals(['item1', 'item2', 'item3', 'item4', 'item5', 'item6'], $result->toArray());
+        self::assertInstanceOf(Collection::class, $result);
+        self::assertEquals('string', $result->getType());
+        self::assertEquals(6, $result->count());
+        self::assertEquals(['item1', 'item2', 'item3', 'item4', 'item5', 'item6'], $result->toArray());
     }
 
     /**

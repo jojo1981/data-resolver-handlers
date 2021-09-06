@@ -1,4 +1,7 @@
-<?php
+<?php /** @noinspection PhpParamsInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @noinspection PhpStrictTypeCheckingInspection */
+declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -9,11 +12,14 @@
  */
 namespace tests\Jojo1981\DataResolverHandlers;
 
+use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 use Jojo1981\DataResolver\Handler\MergeHandlerInterface;
 use Jojo1981\DataResolver\Resolver\Context;
 use Jojo1981\DataResolverHandlers\DoctrineCollectionMergeHandlerDecorator;
+use PHPUnit\Framework\Exception as PhpUnitFrameworkException;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -21,28 +27,31 @@ use Prophecy\Exception\Doubler\ClassNotFoundException;
 use Prophecy\Exception\Doubler\DoubleException;
 use Prophecy\Exception\Doubler\InterfaceNotFoundException;
 use Prophecy\Exception\Prophecy\ObjectProphecyException;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 /**
  * @package tests\Jojo1981\DataResolverHandlers
  */
-class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
+final class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
 {
+    use ProphecyTrait;
+
     /** @var ObjectProphecy|MergeHandlerInterface */
-    private $mergeHandler;
+    private ObjectProphecy $mergeHandler;
 
     /** @var ObjectProphecy|Context */
-    private $context;
+    private ObjectProphecy $context;
 
     /** @var ObjectProphecy|Collection */
-    private $collection1;
+    private ObjectProphecy $collection1;
 
     /** @var ObjectProphecy|Collection */
-    private $collection2;
+    private ObjectProphecy $collection2;
 
     /** @var ObjectProphecy|Collection */
-    private $collection3;
+    private ObjectProphecy $collection3;
 
     /**
      * @throws DoubleException
@@ -95,12 +104,13 @@ class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
      * @return void
+     * @throws Exception
+     * @throws ObjectProphecyException
      */
     public function mergeWithOneCollectionsAndOtherDataShouldReturnValueFromDefaultMergeHandler(): void
     {
-        $this->collection1->getIterator()->willReturn(new \ArrayIterator())->shouldBeCalledOnce();
+        $this->collection1->getIterator()->willReturn(new ArrayIterator())->shouldBeCalledOnce();
         $elements = ['prop1' => $this->collection1->reveal(), 'prop2' => 'text1'];
 
         $this->mergeHandler->merge($this->context, $elements)->shouldBeCalledOnce();
@@ -110,13 +120,15 @@ class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
      * @return void
+     * @throws Exception
+     * @throws Exception
+     * @throws ObjectProphecyException
      */
     public function mergeWithMultipleCollectionsAndOtherDataShouldReturnValueFromDefaultMergeHandler(): void
     {
-        $this->collection1->getIterator()->willReturn(new \ArrayIterator())->shouldBeCalledOnce();
-        $this->collection2->getIterator()->willReturn(new \ArrayIterator())->shouldBeCalledOnce();
+        $this->collection1->getIterator()->willReturn(new ArrayIterator())->shouldBeCalledOnce();
+        $this->collection2->getIterator()->willReturn(new ArrayIterator())->shouldBeCalledOnce();
         $elements = ['prop1' => $this->collection1->reveal(), 'prop2' => $this->collection2->reveal(), 'prop3' => 'text'];
 
         $this->mergeHandler->merge($this->context, $elements)->shouldBeCalledOnce();
@@ -126,13 +138,14 @@ class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
      * @return void
+     * @throws Exception
+     * @throws ObjectProphecyException
      */
     public function mergeWithMultipleCollectionsAndOtherDataFollowedByCollectionShouldReturnValueFromDefaultMergeHandler(): void
     {
-        $this->collection1->getIterator()->willReturn(new \ArrayIterator())->shouldBeCalledOnce();
-        $this->collection2->getIterator()->willReturn(new \ArrayIterator())->shouldBeCalledOnce();
+        $this->collection1->getIterator()->willReturn(new ArrayIterator())->shouldBeCalledOnce();
+        $this->collection2->getIterator()->willReturn(new ArrayIterator())->shouldBeCalledOnce();
         $this->collection3->getIterator()->shouldNotBeCalled();
         $elements = ['prop1' => $this->collection1->reveal(), 'prop2' => $this->collection2->reveal(), 'prop3' => 'text', 'prop4' => $this->collection3->reveal()];
 
@@ -160,10 +173,11 @@ class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
     /**
      * @test
      *
-     * @throws ObjectProphecyException
-     * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
      * @return void
+     * @throws InvalidArgumentException
+     * @throws ObjectProphecyException
+     * @throws PhpUnitFrameworkException
+     * @throws ExpectationFailedException
      */
     public function mergeWithCollectionsOfSameTypeShouldReturnOneCollectionWithAllElementsInIt(): void
     {
@@ -178,9 +192,9 @@ class DoctrineCollectionMergeHandlerDecoratorTest extends TestCase
 
         /** @var Collection $result */
         $result = $this->getDoctrineCollectionMergeHandler()->merge($this->context->reveal(), $elements);
-        $this->assertInstanceOf(Collection::class, $result);
-        $this->assertEquals(6, $result->count());
-        $this->assertEquals(['item1', 'item2', 'item3', 'item4', 'item5', 'item6'], $result->toArray());
+        self::assertInstanceOf(Collection::class, $result);
+        self::assertEquals(6, $result->count());
+        self::assertEquals(['item1', 'item2', 'item3', 'item4', 'item5', 'item6'], $result->toArray());
     }
 
     /**

@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUndefinedMethodInspection */
+declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -9,29 +10,35 @@
  */
 namespace tests\Jojo1981\DataResolverHandlers;
 
+use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Exception;
 use Jojo1981\DataResolver\Handler\Exception\HandlerException;
 use Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler;
+use PHPUnit\Framework\Exception as PhpUnitFrameworkException;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Exception\Doubler\ClassNotFoundException;
 use Prophecy\Exception\Doubler\DoubleException;
 use Prophecy\Exception\Doubler\InterfaceNotFoundException;
 use Prophecy\Exception\Prophecy\ObjectProphecyException;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 /**
  * @package tests\Jojo1981\DataResolverHandlers
  */
-class DoctrineCollectionSequenceHandlerTest extends TestCase
+final class DoctrineCollectionSequenceHandlerTest extends TestCase
 {
-    /** @var ObjectProphecy|Collection */
-    private $originalCollection;
+    use ProphecyTrait;
 
     /** @var ObjectProphecy|Collection */
-    private $returnedCollection;
+    private ObjectProphecy $originalCollection;
+
+    /** @var ObjectProphecy|Collection */
+    private ObjectProphecy $returnedCollection;
 
     /**
      * @return void
@@ -54,11 +61,9 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
      */
     public function supportShouldReturnFalseForDataWhichIsNotACollection(): void
     {
-        $this->assertFalse($this->getDoctrineCollectionSequenceHandler()->supports([]));
-        $this->assertFalse($this->getDoctrineCollectionSequenceHandler()->supports(['key' => 'value']));
-        $this->assertFalse($this->getDoctrineCollectionSequenceHandler()->supports(
-            new \ArrayIterator(['key' => 'value']))
-        );
+        self::assertFalse($this->getDoctrineCollectionSequenceHandler()->supports([]));
+        self::assertFalse($this->getDoctrineCollectionSequenceHandler()->supports(['key' => 'value']));
+        self::assertFalse($this->getDoctrineCollectionSequenceHandler()->supports(new ArrayIterator(['key' => 'value'])));
     }
 
     /**
@@ -71,7 +76,7 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
      */
     public function supportShouldReturnTrueForCollection(): void
     {
-        $this->assertTrue($this->getDoctrineCollectionSequenceHandler()->supports($this->originalCollection->reveal()));
+        self::assertTrue($this->getDoctrineCollectionSequenceHandler()->supports($this->originalCollection->reveal()));
     }
 
     /**
@@ -145,17 +150,18 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
     /**
      * @test
      *
-     * @throws HandlerException
+     * @return void
      * @throws InvalidArgumentException
      * @throws ObjectProphecyException
      * @throws ExpectationFailedException
-     * @return void
+     * @throws Exception
+     * @throws HandlerException
      */
     public function getIteratorShouldReturnTheIteratorFromTheCollection(): void
     {
-        $iterator = new \ArrayIterator([]);
+        $iterator = new ArrayIterator([]);
         $this->originalCollection->getIterator()->willReturn($iterator)->shouldBeCalledOnce();
-        $this->assertSame(
+        self::assertSame(
             $iterator,
             $this->getDoctrineCollectionSequenceHandler()->getIterator($this->originalCollection->reveal())
         );
@@ -165,6 +171,7 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
      * @test
      *
      * @return void
+     * @throws PhpUnitFrameworkException
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
@@ -175,35 +182,36 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
         $originalCollection = new ArrayCollection($elements);
 
         // assert initial data
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertSame($elements, $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertSame($elements, $originalCollection->toArray());
 
         // test filter
         $calledTimes = 0;
         $expectedCallArguments = [['value1', 'key1'], ['value2', 'key2'], ['value3', 'key3'], ['value4', 'key4']];
         $callback = function (string $value, string $key) use (&$calledTimes, $expectedCallArguments): bool {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $key]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $key]);
             $calledTimes++;
 
             return 'value2' !== $value && 'key3' !== $key;
         };
 
         $filteredCollection = $this->getDoctrineCollectionSequenceHandler()->filter($originalCollection, $callback);
-        $this->assertSame(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertInstanceOf(ArrayCollection::class, $filteredCollection);
-        $this->assertNotSame($filteredCollection, $originalCollection);
-        $this->assertEquals(2, $filteredCollection->count());
-        $this->assertEquals(['key1' => 'value1', 'key4' => 'value4'], $filteredCollection->toArray());
+        self::assertSame(4, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertInstanceOf(ArrayCollection::class, $filteredCollection);
+        self::assertNotSame($filteredCollection, $originalCollection);
+        self::assertEquals(2, $filteredCollection->count());
+        self::assertEquals(['key1' => 'value1', 'key4' => 'value4'], $filteredCollection->toArray());
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(4, $originalCollection->count());
-        $this->assertSame($elements, $originalCollection->toArray());
+        self::assertEquals(4, $originalCollection->count());
+        self::assertSame($elements, $originalCollection->toArray());
     }
 
     /**
      * @test
      *
      * @return void
+     * @throws PhpUnitFrameworkException
      * @throws ExpectationFailedException
      * @throws HandlerException
      * @throws InvalidArgumentException
@@ -252,8 +260,8 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
         $originalCollection = new ArrayCollection($elements);
 
         // assert initial data
-        $this->assertEquals(10, $originalCollection->count());
-        $this->assertSame($elements, $originalCollection->toArray());
+        self::assertEquals(10, $originalCollection->count());
+        self::assertSame($elements, $originalCollection->toArray());
 
         // test flatten
         $calledTimes = 0;
@@ -271,24 +279,24 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
         ];
 
         $callback = function (array $value, string $key) use (&$calledTimes, $expectedCallArguments) {
-            $this->assertEquals($expectedCallArguments[$calledTimes], [$value, $key]);
+            self::assertEquals($expectedCallArguments[$calledTimes], [$value, $key]);
             $calledTimes++;
 
             return $value['name'];
         };
         $flattenCollection = $this->getDoctrineCollectionSequenceHandler()->flatten($originalCollection, $callback);
-        $this->assertSame(10, $calledTimes, 'Callback is expected to be called exactly 4 times');
-        $this->assertInstanceOf(ArrayCollection::class, $flattenCollection);
-        $this->assertNotSame($flattenCollection, $originalCollection);
-        $this->assertEquals(12, $flattenCollection->count());
-        $this->assertEquals(
+        self::assertSame(10, $calledTimes, 'Callback is expected to be called exactly 4 times');
+        self::assertInstanceOf(ArrayCollection::class, $flattenCollection);
+        self::assertNotSame($flattenCollection, $originalCollection);
+        self::assertEquals(12, $flattenCollection->count());
+        self::assertEquals(
             ['value1', 'value2.1', 'value2.2', 'value2.3', 'value3', 'value5', 'value7.1', 'value7.2', false, true, 'value10.1', 'value10.2'],
             $flattenCollection->toArray()
         );
 
         // assert no side effect are occurred and original collection is not changed
-        $this->assertEquals(10, $originalCollection->count());
-        $this->assertSame($elements, $originalCollection->toArray());
+        self::assertEquals(10, $originalCollection->count());
+        self::assertSame($elements, $originalCollection->toArray());
     }
 
     /**
@@ -301,8 +309,8 @@ class DoctrineCollectionSequenceHandlerTest extends TestCase
      */
     public function staticShouldReturnTheCountOfThePassedCollection(): void
     {
-        $this->assertEquals(0, $this->getDoctrineCollectionSequenceHandler()->count(new ArrayCollection()));
-        $this->assertEquals(3, $this->getDoctrineCollectionSequenceHandler()->count(new ArrayCollection([1, 2, 3])));
+        self::assertEquals(0, $this->getDoctrineCollectionSequenceHandler()->count(new ArrayCollection()));
+        self::assertEquals(3, $this->getDoctrineCollectionSequenceHandler()->count(new ArrayCollection([1, 2, 3])));
     }
 
     /**

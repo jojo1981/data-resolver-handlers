@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -10,11 +10,15 @@
 namespace Jojo1981\DataResolverHandlers;
 
 use Doctrine\Common\Collections\Collection;
+use Exception;
+use Traversable;
+use function array_values;
+use function is_array;
 
 /**
  * @package Jojo1981\DataResolverHandlers
  */
-class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandler
+final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandler
 {
     /**
      * @return string
@@ -26,10 +30,10 @@ class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandle
 
     /**
      * @param mixed|Collection $data
-     * @throws \Exception
-     * @return \Traversable
+     * @throws Exception
+     * @return Traversable
      */
-    protected function performGetIterator($data): \Traversable
+    protected function performGetIterator($data): Traversable
     {
         return $data->getIterator();
     }
@@ -59,7 +63,7 @@ class DoctrineCollectionSequenceHandler extends AbstractCollectionSequenceHandle
             if (null === $callbackResult) {
                 continue;
             }
-            $callbackResult = !\is_array($callbackResult) ? [$callbackResult] : \array_values($callbackResult);
+            $callbackResult = !is_array($callbackResult) ? [$callbackResult] : array_values($callbackResult);
             foreach ($callbackResult as $item) {
                 $this->addToCollection($result, $item);
             }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -11,6 +11,9 @@ namespace Jojo1981\DataResolverHandlers;
 
 use Jojo1981\DataResolver\Handler\Exception\HandlerException;
 use Jojo1981\DataResolver\Handler\SequenceHandlerInterface;
+use Traversable;
+use function get_class;
+use function sprintf;
 
 /**
  * @package Jojo1981\DataResolverHandlers
@@ -31,9 +34,9 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
     /**
      * @param mixed $data
      * @throws HandlerException
-     * @return \Traversable
+     * @return Traversable
      */
-    final public function getIterator($data): \Traversable
+    final public function getIterator($data): Traversable
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('getIterator');
@@ -93,10 +96,10 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      */
     private function throwUnsupportedException(string $methodName): void
     {
-        throw new HandlerException(\sprintf(
+        throw new HandlerException(sprintf(
             'The `%s` can only handle instances of `%s`. Illegal invocation of method `%s`. You should invoke ' .
             'the `%s` method first!',
-            \get_class($this),
+            get_class($this),
             $this->getSupportedType(),
             $methodName,
             'supports'
@@ -110,9 +113,9 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
 
     /**
      * @param mixed $data
-     * @return \Traversable
+     * @return Traversable
      */
-    abstract protected function performGetIterator($data): \Traversable;
+    abstract protected function performGetIterator($data): Traversable;
 
     /**
      * @param mixed $data
