@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
+declare(strict_types=1);
+
 namespace Jojo1981\DataResolverHandlers;
 
 use Jojo1981\DataResolver\Handler\Exception\HandlerException;
@@ -51,7 +53,7 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @throws HandlerException
      * @return mixed
      */
-    final public function filter($data, callable $callback)
+    final public function filter($data, callable $callback): mixed
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('filter');
@@ -115,25 +117,25 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @param mixed $data
      * @return Traversable
      */
-    abstract protected function performGetIterator($data): Traversable;
+    abstract protected function performGetIterator(mixed $data): Traversable;
 
     /**
      * @param mixed $data
      * @param callable $callback
      * @return mixed
      */
-    abstract protected function performFilter($data, callable $callback);
+    abstract protected function performFilter(mixed $data, callable $callback);
 
     /**
      * @param mixed $data
      * @param callable $callback
      * @return mixed
      */
-    abstract protected function performFlatten($data, callable $callback);
+    abstract protected function performFlatten(mixed $data, callable $callback);
 
     /**
      * @param mixed $data
      * @return int
      */
-    abstract protected function performCount($data): int;
+    abstract protected function performCount(mixed $data): int;
 }

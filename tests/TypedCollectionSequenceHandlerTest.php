@@ -1,6 +1,4 @@
-<?php /** @noinspection PhpRedundantCatchClauseInspection */
-/** @noinspection PhpUndefinedMethodInspection */
-declare(strict_types=1);
+<?php
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -9,6 +7,12 @@ declare(strict_types=1);
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
+
+/** @noinspection PhpRedundantCatchClauseInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
+declare(strict_types=1);
+
 namespace tests\Jojo1981\DataResolverHandlers;
 
 use ArrayIterator;

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
+declare(strict_types=1);
+
 namespace tests\Jojo1981\DataResolverHandlers\Integration;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -157,7 +159,7 @@ final class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return ArrayCollection|stdClass[]
+     * @return ArrayCollection<int, stdClass>
      */
     private function getTestData(): ArrayCollection
     {

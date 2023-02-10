@@ -36,7 +36,7 @@ final class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHan
      * @param mixed|Collection $data
      * @return Traversable
      */
-    protected function performGetIterator($data): Traversable
+    protected function performGetIterator(mixed $data): Traversable
     {
         return $data->getIterator();
     }
@@ -45,10 +45,9 @@ final class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHan
      * @param mixed|Collection $data
      * @param callable $callback
      * @return Collection
-     * @throws RuntimeException
      * @throws CollectionException
      */
-    protected function performFilter($data, callable $callback): Collection
+    protected function performFilter(mixed $data, callable $callback): Collection
     {
         return $data->filter($callback);
     }
@@ -57,7 +56,7 @@ final class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHan
      * @param mixed|Collection $data
      * @return int
      */
-    protected function performCount($data): int
+    protected function performCount(mixed $data): int
     {
         return $data->count();
     }
@@ -70,7 +69,7 @@ final class TypedCollectionSequenceHandler extends AbstractCollectionSequenceHan
      * @throws RuntimeException
      * @throws CollectionException
      */
-    protected function performFlatten($data, callable $callback): Collection
+    protected function performFlatten(mixed $data, callable $callback): Collection
     {
         $elements = [];
         $type = $data instanceof Collection ? $data->getType() : null;

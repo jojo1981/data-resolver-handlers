@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
+declare(strict_types=1);
+
 namespace tests\Jojo1981\DataResolverHandlers\Integration;
 
 use Jojo1981\DataResolver\Exception\ResolverException;
@@ -167,8 +169,7 @@ final class TypedCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @return Collection|stdClass[]
-     * @throws RuntimeException
+     * @return Collection<stdClass>
      * @throws CollectionException
      */
     private function getTestData(): Collection
@@ -178,7 +179,6 @@ final class TypedCollectionIntegrationTest extends TestCase
 
     /**
      * @return stdClass
-     * @throws RuntimeException
      * @throws CollectionException
      */
     private function getJohnDoe(): stdClass
@@ -196,7 +196,6 @@ final class TypedCollectionIntegrationTest extends TestCase
 
     /**
      * @return stdClass
-     * @throws RuntimeException
      * @throws CollectionException
      */
     private function getJaneRoe(): stdClass

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
+declare(strict_types=1);
+
 namespace Jojo1981\DataResolverHandlers;
 
 use Doctrine\Common\Collections\Collection;
@@ -30,10 +32,10 @@ final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequence
 
     /**
      * @param mixed|Collection $data
-     * @throws Exception
      * @return Traversable
+     *@throws Exception
      */
-    protected function performGetIterator($data): Traversable
+    protected function performGetIterator(mixed $data): Traversable
     {
         return $data->getIterator();
     }
@@ -43,7 +45,7 @@ final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequence
      * @param callable $callback
      * @return Collection
      */
-    protected function performFilter($data, callable $callback): Collection
+    protected function performFilter(mixed $data, callable $callback): Collection
     {
         return $data->filter($callback);
     }
@@ -53,7 +55,7 @@ final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequence
      * @param callable $callback
      * @return Collection
      */
-    public function performFlatten($data, callable $callback): Collection
+    public function performFlatten(mixed $data, callable $callback): Collection
     {
         $result = clone $data;
         $result->clear();
@@ -76,7 +78,7 @@ final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequence
      * @param mixed|Collection $data
      * @return int
      */
-    protected function performCount($data): int
+    protected function performCount(mixed $data): int
     {
         return $data->count();
     }
@@ -86,7 +88,7 @@ final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequence
      * @param mixed $element
      * @return void
      */
-    private function addToCollection(Collection $target, $element): void
+    private function addToCollection(Collection $target, mixed $element): void
     {
         if ($element instanceof Collection) {
             foreach ($element as $item) {

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /*
  * This file is part of the jojo1981/data-resolver-handlers package
  *
@@ -7,6 +7,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
+declare(strict_types=1);
+
 namespace Jojo1981\DataResolverHandlers;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -94,7 +96,7 @@ final class DoctrineCollectionMergeHandlerDecorator implements MergeHandlerInter
      * @param mixed $item
      * @return string
      */
-    private function getType($item): string
+    private function getType(mixed $item): string
     {
         return is_object($item) ? get_class($item) : gettype($item);
     }

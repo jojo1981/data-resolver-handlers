@@ -13,7 +13,6 @@ use Jojo1981\DataResolver\Handler\MergeHandlerInterface;
 use Jojo1981\DataResolver\Resolver\Context;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
-use RuntimeException;
 use function array_shift;
 
 /**
@@ -36,7 +35,6 @@ final class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterfac
      * @param Context $context
      * @param array $elements
      * @return mixed
-     * @throws RuntimeException
      * @throws CollectionException
      */
     public function merge(Context $context, array $elements)
