@@ -32,7 +32,6 @@
     }
   },
   "require-dev": {
-    "php-coveralls/php-coveralls": "^2.4",
     "phpspec/prophecy-phpunit": "^2.0",
     "phpunit/phpunit": "^9.5",
     "roave/security-advisories": "dev-latest"

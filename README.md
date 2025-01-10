@@ -1,7 +1,7 @@
 Handlers for the data resolver 
 =====================
 
-[![Build Status](https://travis-ci.com/jojo1981/data-resolver-handlers.svg?branch=master)](https://travis-ci.com/jojo1981/data-resolver-handlers)
+[![Build Status](https://github.com/jojo1981/data-resolver-handlers/actions/workflows/build.yml/badge.svg)](https://github.com/jojo1981/data-resolver-handlers/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/jojo1981/data-resolver-handlers/badge.svg)](https://coveralls.io/github/jojo1981/data-resolver-handlers)
 [![Latest Stable Version](https://poser.pugx.org/jojo1981/data-resolver-handlers/v/stable)](https://packagist.org/packages/jojo1981/data-resolver-handlers)
 [![Total Downloads](https://poser.pugx.org/jojo1981/data-resolver-handlers/downloads)](https://packagist.org/packages/jojo1981/data-resolver-handlers)
