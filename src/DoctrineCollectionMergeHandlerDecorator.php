@@ -41,7 +41,7 @@ final class DoctrineCollectionMergeHandlerDecorator implements MergeHandlerInter
      * @param array $elements
      * @return mixed
      */
-    public function merge(Context $context, array $elements)
+    public function merge(Context $context, array $elements): mixed
     {
         if (!empty($elements) && $this->areAllElementsOfTypeCollectionAndAreAllValuesOfSameType($elements)) {
             return $this->mergeCollections($elements);

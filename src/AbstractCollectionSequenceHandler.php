@@ -35,8 +35,8 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
 
     /**
      * @param mixed $data
-     * @throws HandlerException
      * @return Traversable
+     * @throws HandlerException
      */
     final public function getIterator($data): Traversable
     {
@@ -50,8 +50,8 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
     /**
      * @param mixed $data
      * @param callable $callback
-     * @throws HandlerException
      * @return mixed
+     * @throws HandlerException
      */
     final public function filter($data, callable $callback): mixed
     {
@@ -65,10 +65,10 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
     /**
      * @param mixed $data
      * @param callable $callback
-     * @throws HandlerException
      * @return mixed
+     * @throws HandlerException
      */
-    final public function flatten($data, callable $callback)
+    final public function flatten($data, callable $callback): mixed
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('flatten');
@@ -79,8 +79,8 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
 
     /**
      * @param mixed $data
-     * @throws HandlerException
      * @return int
+     * @throws HandlerException
      */
     final public function count($data): int
     {
@@ -93,8 +93,8 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
 
     /**
      * @param string $methodName
-     * @throws HandlerException
      * @return void
+     * @throws HandlerException
      */
     private function throwUnsupportedException(string $methodName): void
     {
@@ -124,14 +124,14 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @param callable $callback
      * @return mixed
      */
-    abstract protected function performFilter(mixed $data, callable $callback);
+    abstract protected function performFilter(mixed $data, callable $callback): mixed;
 
     /**
      * @param mixed $data
      * @param callable $callback
      * @return mixed
      */
-    abstract protected function performFlatten(mixed $data, callable $callback);
+    abstract protected function performFlatten(mixed $data, callable $callback): mixed;
 
     /**
      * @param mixed $data

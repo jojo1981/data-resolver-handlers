@@ -33,7 +33,7 @@ final class DoctrineCollectionSequenceHandler extends AbstractCollectionSequence
     /**
      * @param mixed|Collection $data
      * @return Traversable
-     *@throws Exception
+     * @throws Exception
      */
     protected function performGetIterator(mixed $data): Traversable
     {
