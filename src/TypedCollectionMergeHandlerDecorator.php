@@ -37,7 +37,7 @@ final class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterfac
      * @return mixed
      * @throws CollectionException
      */
-    public function merge(Context $context, array $elements)
+    public function merge(Context $context, array $elements): mixed
     {
         if (!empty($elements) && $this->areAllElementsOfTypeCollectionAndSameType($elements)) {
             return Collection::createFromCollections($this->getTypeFromElements($elements), $elements);
@@ -72,8 +72,10 @@ final class TypedCollectionMergeHandlerDecorator implements MergeHandlerInterfac
             }
             if (null === $firstCollection) {
                 $firstCollection = $element;
-            } else if (!$firstCollection->isEqualType($element)) {
-                return false;
+            } else {
+                if (!$firstCollection->isEqualType($element)) {
+                    return false;
+                }
             }
         }
 
