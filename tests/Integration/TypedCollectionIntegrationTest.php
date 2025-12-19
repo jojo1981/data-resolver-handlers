@@ -24,10 +24,10 @@ use Jojo1981\DataResolverHandlers\TypedCollectionMergeHandlerDecorator;
 use Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler;
 use Jojo1981\TypedCollection\Collection;
 use Jojo1981\TypedCollection\Exception\CollectionException;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use stdClass;
 
 /**
@@ -59,19 +59,16 @@ final class TypedCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @return void
      * @throws ExpectationFailedException
      * @throws ExtractorException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws PredicateException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function integrationTestFlatten(): void
+    #[CoversNothing]
+    public function testIntegrationTestFlatten(): void
     {
         $expected = new Collection('string', ['Doe', 'Roe']);
         $actual = $this->resolverBuilderFactory
@@ -96,20 +93,16 @@ final class TypedCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @return void
      * @throws ExpectationFailedException
      * @throws ExtractorException
-     * @throws Factory\Exception\FactoryException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws PredicateException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function integrationTestFilter(): void
+    #[CoversNothing]
+    public function testIntegrationTestFilter(): void
     {
         $expected = new Collection(stdClass::class, [0 => $this->getJohnDoe()]);
         $actual = $this->resolverBuilderFactory
@@ -127,19 +120,16 @@ final class TypedCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @return void
      * @throws ExpectationFailedException
      * @throws ExtractorException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws PredicateException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function integrationTestMerge(): void
+    #[CoversNothing]
+    public function testIntegrationTestMerge(): void
     {
         $expected = new Collection(stdClass::class, [$this->getAddress1(), $this->getAddress2()]);
         $actual = $this->resolverBuilderFactory
@@ -150,19 +140,16 @@ final class TypedCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @return void
      * @throws ExpectationFailedException
      * @throws ExtractorException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws PredicateException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function integrationTestCount(): void
+    #[CoversNothing]
+    public function testIntegrationTestCount(): void
     {
         self::assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new Collection('string')));
         self::assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));

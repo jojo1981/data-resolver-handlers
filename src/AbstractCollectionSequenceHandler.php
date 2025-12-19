@@ -13,6 +13,7 @@ namespace Jojo1981\DataResolverHandlers;
 
 use Jojo1981\DataResolver\Handler\Exception\HandlerException;
 use Jojo1981\DataResolver\Handler\SequenceHandlerInterface;
+use Jojo1981\TypedCollection\Exception\CollectionException;
 use Traversable;
 use function get_class;
 use function sprintf;
@@ -26,7 +27,7 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @param mixed $data
      * @return bool
      */
-    final public function supports($data): bool
+    final public function supports(mixed $data): bool
     {
         $type = $this->getSupportedType();
 
@@ -38,7 +39,7 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @return Traversable
      * @throws HandlerException
      */
-    final public function getIterator($data): Traversable
+    final public function getIterator(mixed $data): Traversable
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('getIterator');
@@ -53,7 +54,7 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @return mixed
      * @throws HandlerException
      */
-    final public function filter($data, callable $callback): mixed
+    final public function filter(mixed $data, callable $callback): mixed
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('filter');
@@ -67,8 +68,9 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @param callable $callback
      * @return mixed
      * @throws HandlerException
+     * @throws CollectionException
      */
-    final public function flatten($data, callable $callback): mixed
+    final public function flatten(mixed $data, callable $callback): mixed
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('flatten');
@@ -82,7 +84,7 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
      * @return int
      * @throws HandlerException
      */
-    final public function count($data): int
+    final public function count(mixed $data): int
     {
         if (!$this->supports($data)) {
             $this->throwUnsupportedException('count');
@@ -129,6 +131,7 @@ abstract class AbstractCollectionSequenceHandler implements SequenceHandlerInter
     /**
      * @param mixed $data
      * @param callable $callback
+     * @throws CollectionException
      * @return mixed
      */
     abstract protected function performFlatten(mixed $data, callable $callback): mixed;

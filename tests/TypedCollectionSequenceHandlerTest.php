@@ -7,10 +7,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed in the root of the source code
  */
-
-/** @noinspection PhpRedundantCatchClauseInspection */
-/** @noinspection PhpUndefinedMethodInspection */
-
 declare(strict_types=1);
 
 namespace tests\Jojo1981\DataResolverHandlers;
@@ -31,7 +27,6 @@ use Prophecy\Exception\Prophecy\ObjectProphecyException;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
 use RuntimeException;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use stdClass;
 use function array_values;
 
@@ -42,10 +37,10 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
 {
     use ProphecyTrait;
 
-    /** @var ObjectProphecy|Collection */
+    /** @var ObjectProphecy<Collection> */
     private ObjectProphecy $originalCollection;
 
-    /** @var ObjectProphecy|Collection */
+    /** @var ObjectProphecy<Collection> */
     private ObjectProphecy $returnedCollection;
 
     /**
@@ -61,13 +56,10 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
-     * @throws InvalidArgumentException
      * @throws ExpectationFailedException
      * @return void
      */
-    public function supportShouldReturnFalseForDataWhichIsNotACollection(): void
+    public function testSupportShouldReturnFalseForDataWhichIsNotACollection(): void
     {
         self::assertFalse($this->getTypedCollectionSequenceHandler()->supports([]));
         self::assertFalse($this->getTypedCollectionSequenceHandler()->supports(['key' => 'value']));
@@ -75,25 +67,20 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @throws ObjectProphecyException
-     * @throws InvalidArgumentException
      * @throws ExpectationFailedException
      * @return void
      */
-    public function supportShouldReturnTrueForCollection(): void
+    public function testSupportShouldReturnTrueForCollection(): void
     {
         self::assertTrue($this->getTypedCollectionSequenceHandler()->supports($this->originalCollection->reveal()));
     }
 
     /**
-     * @test
-     *
      * @throws HandlerException
      * @return void
      */
-    public function getIteratorShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
+    public function testGetIteratorShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
     {
         $this->expectExceptionObject(new HandlerException(
             'The `Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler` can only handle instances of ' .
@@ -105,12 +92,10 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @throws HandlerException
      * @return void
      */
-    public function filterShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
+    public function testFilterShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
     {
         $this->expectExceptionObject(new HandlerException(
             'The `Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler` can only handle instances of ' .
@@ -122,12 +107,11 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
-     * @throws HandlerException
      * @return void
+     * @throws HandlerException
+     * @throws CollectionException
      */
-    public function flattenShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
+    public function testFlattenShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
     {
         $this->expectExceptionObject(new HandlerException(
             'The `Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler` can only handle instances of ' .
@@ -139,12 +123,10 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @throws HandlerException
      * @return void
      */
-    public function countShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
+    public function testCountShouldThrowHandlerExceptionWhenCalledAnNotSupportTheData(): void
     {
         $this->expectExceptionObject(new HandlerException(
             'The `Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler` can only handle instances of ' .
@@ -156,17 +138,15 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws ObjectProphecyException
      * @throws ExpectationFailedException
      * @return void
      */
-    public function getIteratorShouldReturnTheIteratorFromTheCollection(): void
+    public function testGetIteratorShouldReturnTheIteratorFromTheCollection(): void
     {
         $iterator = new CollectionIterator(new ArrayIterator([]));
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->originalCollection->getIterator()->willReturn($iterator)->shouldBeCalledOnce();
         self::assertSame(
             $iterator,
@@ -175,17 +155,14 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function filterShouldReturnTheFilterResultOfTheCollection(): void
+    public function testFilterShouldReturnTheFilterResultOfTheCollection(): void
     {
         $elements = ['key1' => 'value1', 'key2' => 'value2', 'key3' => 'value3', 'key4' => 'value4'];
         $originalCollection = new Collection('string', $elements);
@@ -196,8 +173,8 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
 
         // test filter
         $calledTimes = 0;
-        $expectedCallArguments = [['value1', 0], ['value2', 1], ['value3', 2], ['value4', 3]];
-        $callback = function (string $value, int $index) use (&$calledTimes, $expectedCallArguments): bool {
+        $callback = function (string $value, int $index) use (&$calledTimes): bool {
+            $expectedCallArguments = [['value1', 0], ['value2', 1], ['value3', 2], ['value4', 3]];
             self::assertEquals($expectedCallArguments[$calledTimes], [$value, $index]);
             $calledTimes++;
 
@@ -213,22 +190,20 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
         self::assertEquals(['value1', 'value4'], $filteredCollection->toArray());
 
         // assert no side effect are occurred and original collection is not changed
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertEquals(4, $originalCollection->count());
         self::assertEquals(array_values($elements), $originalCollection->toArray());
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAStringValue(): void
+    public function testFlattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAStringValue(): void
     {
         $elements = [
             'key1' => (object) [
@@ -280,22 +255,20 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
         );
 
         // assert no side effect are occurred and original collection is not changed
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertEquals(4, $originalCollection->count());
         self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAnArrayAnTheLastElementIsAString(): void
+    public function testFlattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsAnArrayAnTheLastElementIsAString(): void
     {
         $elements = [
             'key1' => (object) [
@@ -347,22 +320,20 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
         );
 
         // assert no side effect are occurred and original collection is not changed
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertEquals(4, $originalCollection->count());
         self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function flattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsACollection(): void
+    public function testFlattenShouldReturnANewCollectionWithFlattenValuesAnTheTypeIsDeterminedByTheFirstResultWhichIsACollection(): void
     {
         $elements = [
             'key1' => (object) [
@@ -414,22 +385,20 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
         );
 
         // assert no side effect are occurred and original collection is not changed
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertEquals(4, $originalCollection->count());
         self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function flattenShouldThrowACollectionExceptionWhenAnElementIsNotMatchingTheDeterminedType(): void
+    public function testFlattenShouldThrowACollectionExceptionWhenAnElementIsNotMatchingTheDeterminedType(): void
     {
         $elements = [
             'key1' => (object) [
@@ -484,22 +453,20 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
         self::assertNull($flattenCollection);
 
         // assert no side effect are occurred and original collection is not changed
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         self::assertEquals(4, $originalCollection->count());
         self::assertSame(array_values($elements), $originalCollection->toArray());
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws Exception
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function performFlattenShouldReturnAnEmptyCollectionOfTheSameTypeWhenAnEmptyCollectionIsPassed(): void
+    public function testPerformFlattenShouldReturnAnEmptyCollectionOfTheSameTypeWhenAnEmptyCollectionIsPassed(): void
     {
         /** @var Collection $result */
         $result = $this->getTypedCollectionSequenceHandler()->flatten(new Collection('string'), static function () {});
@@ -509,16 +476,13 @@ final class TypedCollectionSequenceHandlerTest extends TestCase
     }
 
     /**
-     * @test
-     *
      * @return void
      * @throws ExpectationFailedException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws CollectionException
      */
-    public function staticShouldReturnTheCountOfThePassedCollection(): void
+    public function testStaticShouldReturnTheCountOfThePassedCollection(): void
     {
         self::assertEquals(0, $this->getTypedCollectionSequenceHandler()->count(new Collection('string')));
         self::assertEquals(3, $this->getTypedCollectionSequenceHandler()->count(new Collection('integer', [1, 2, 3])));

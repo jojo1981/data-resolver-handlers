@@ -23,9 +23,9 @@ use Jojo1981\DataResolverHandlers\DoctrineCollectionMergeHandlerDecorator;
 use Jojo1981\DataResolverHandlers\DoctrineCollectionSequenceHandler;
 use Jojo1981\DataResolverHandlers\TypedCollectionMergeHandlerDecorator;
 use Jojo1981\DataResolverHandlers\TypedCollectionSequenceHandler;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\RecursionContext\InvalidArgumentException;
 use stdClass;
 
 /**
@@ -57,17 +57,14 @@ final class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @throws HandlerException
      * @throws PredicateException
      * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
      * @throws ExtractorException
      * @return void
      */
-    public function integrationTestFlatten(): void
+    #[CoversNothing]
+    public function testIntegrationTestFlatten(): void
     {
         $expected = new ArrayCollection(['Doe', 'Roe']);
         $actual = $this->resolverBuilderFactory
@@ -92,18 +89,15 @@ final class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @throws PredicateException
      * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
      * @throws ExtractorException
      * @throws ResolverException
      * @throws HandlerException
      * @return void
      */
-    public function integrationTestFilter(): void
+    #[CoversNothing]
+    public function testIntegrationTestFilter(): void
     {
         $expected = new ArrayCollection([0 => $this->getJohnDoe()]);
         $actual = $this->resolverBuilderFactory
@@ -121,17 +115,14 @@ final class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @throws HandlerException
      * @throws PredicateException
      * @throws ExpectationFailedException
-     * @throws InvalidArgumentException
      * @throws ExtractorException
      * @return void
      */
-    public function integrationTestMerge(): void
+    #[CoversNothing]
+    public function testIntegrationTestMerge(): void
     {
         $expected = new ArrayCollection([$this->getAddress1(), $this->getAddress2()]);
         $actual = $this->resolverBuilderFactory
@@ -142,17 +133,14 @@ final class DoctrineCollectionIntegrationTest extends TestCase
     }
 
     /**
-     * @test
-     * @coversNothing
-     *
      * @throws ExtractorException
      * @throws HandlerException
-     * @throws InvalidArgumentException
      * @throws PredicateException
      * @throws ExpectationFailedException
      * @return void
      */
-    public function integrationTestCount(): void
+    #[CoversNothing]
+    public function testIntegrationTestCount(): void
     {
         self::assertEquals(0, $this->resolverBuilderFactory->count()->resolve(new ArrayCollection()));
         self::assertEquals(2, $this->resolverBuilderFactory->count()->resolve($this->getTestData()));
